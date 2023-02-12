@@ -24,3 +24,16 @@ Une fois cela fais, vous pouvez vous connecter avec le compte : identifiant:tes
 mot de passe:test
 
 Vous pouvez aussi créer votre propre compte.
+
+Rajout:
+Token
+Sérialisation en JSON
+Timer en javascripct
+Redirection en dehors du formulaire
+Accréditation de la bdd en dehors du serveur
+
+
+Utilisation:
+Mettre le fichier "config.php" en dehors du serveur
+Dans les fichier connexion.php et inscription.php indiquer le chemin
+
