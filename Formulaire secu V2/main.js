@@ -1,10 +1,11 @@
+var startingSeconds = 60;
+
 function verifierConformiteFormulaire() {
   
+
   let id = document.getElementById("id").value;
   let mdp = document.getElementById("mdp").value;
 
-  /* ici on vérifie si le formulaire contient une valeur 
-   et ne contient pas d'espace */
   if (!id || !mdp) {
     return false;
   } else {
@@ -18,7 +19,9 @@ function verifierConformiteFormulaire() {
 }
 
 
-function effacerInput() {
+function effacerInput(event) {
+
+  event.preventDefault
 
   let id = document.getElementById("id");
   let mdp = document.getElementById("mdp");
@@ -27,12 +30,28 @@ function effacerInput() {
   mdp.value = "";
 }
 
+function timer(){
+// Update the count down every 1 second
+var x = setInterval(function() {
+
+  // Decrement the number of seconds
+  startingSeconds--;
+  $("#status").text(`Trop d'essai veuillez attendre ${startingSeconds} secondes`);
+    
+  // If the count down is finished, write some text 
+  if (startingSeconds === 0) {
+    clearInterval(x);
+    $("#BoutonConnexion").attr("disabled",false)
+  }
+}, 1000);  
+}
+
 function Connexion(event) {
   
   let id = document.getElementById("id").value;
   let mdp = document.getElementById("mdp").value;
+  let token = document.getElementById("token").value;
 
-  // empêche l'envoi du formulaire
   event.preventDefault();
 
   let mdphash ="";
@@ -47,14 +66,27 @@ function Connexion(event) {
       
       idhash = hash;
 
-      // ici une fonction ajax de type POST 
-      // pour ne pas afficher le mot de passe et l'identifiant dans  l'URL
       $.ajax({
         type: "POST",
+        dataType: "json",
         url: "connexion.php",
-        data: { m: mdphash, i: idhash},
+        data: { m: mdphash, i: idhash, t:token},
         success: function (rep) {
-          $("#status").text(rep);
+          if(rep.tentative>1)
+            $("#status").text(`${rep.message} ${rep.tentative} tentatives`);
+          else if(rep.tentative == 1)
+            $("#status").text(`${rep.message} ${rep.tentative} tentative`);
+          else if (rep.tentative == 0){
+            $("#BoutonConnexion").attr("disabled",true)
+            $("#status").text(`${rep.message} ${rep.temps} secondes`);
+            startingSeconds = rep.temps;
+            timer();
+
+          }
+          else
+            $("#status").text(`${rep.message}`);
+
+          $("#status").css('color', rep.couleur);
         },
       });
     });
@@ -70,6 +102,7 @@ function Inscription(event) {
 
   let id = document.getElementById("id").value;
   let mdp = document.getElementById("mdp").value;
+  let token = document.getElementById("token").value;
   let mdphash ="";
   let idhash = "";
 
@@ -82,9 +115,11 @@ function Inscription(event) {
         $.ajax({
           type: "POST",
           url: "inscription.php",
-          data: { m: mdphash, i: idhash},
+          dataType: "json",
+          data: { m: mdphash, i: idhash,t:token},
           success: function (rep) {
-            $("#status").text(rep);
+            $("#status").text(rep.message);
+            $("#status").css('color', rep.couleur);
           },
         });
       });
@@ -95,7 +130,6 @@ function Inscription(event) {
 
 }
 
-// fonction javascript qui génère du SHA-256
 async function hashMessage(message) {
     const msgUint8 = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);

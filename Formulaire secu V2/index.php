@@ -1,3 +1,10 @@
+<?php
+session_start();
+$token = uniqid(rand(), true); // jeton unique
+$_SESSION['t'] = $token; // stockage
+// heure de création du jeton
+$_SESSION['token_time'] = time();
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -12,11 +19,9 @@
     <link rel="stylesheet" href="assets/css/Login-Form-Dark.css" />
     <link rel="stylesheet" href="assets/css/Registration-Form-with-Photo.css" />
     <link rel="stylesheet" href="assets/css/styles.css" />
-    <script src="obfuscated.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.min.js"></script>
   </head>
 
-  <body style="color: rgb(33, 37, 41)">
+  <body style="color: rgb(33, 37, 41);">
     <div class="register-photo">
       <div class="form-container">
         <div class="image-holder"></div>
@@ -41,10 +46,19 @@
               name="mdp"
               placeholder="Mot de passe"
             />
+          </div> 
+
+          <div class="form-group">
+            <input 
+            type="hidden" 
+            name="token"
+            id="token" 
+            value="<?php echo $token;?>"
+            />
           </div>
 
           <div class="form-group">
-            <button class="btn btn-primary btn-block" type="submit" onclick="Connexion(event)">
+            <button class="btn btn-primary btn-block" id="BoutonConnexion" type="submit" onclick="Connexion(event)">
               Connexion
             </button>
             <button class="btn btn-primary btn-block" type="submit" onclick="Inscription(event)">
@@ -53,16 +67,17 @@
           </div>
 
           <div class="form-group">
-            <i class="btn btn-primary btn-block" type="submit" onclick="effacerInput(event)">
+            <i class="btn btn-primary btn-block" onclick="effacerInput(event)">
                 Reset
             </i>
           </div>
-          <small id="status" class="text-danger"></small>
+          <small id="status"></small>
         </form>
       </div>
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-
+    <script src="obfuscated.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.min.js"></script>
   </body>
 </html>
